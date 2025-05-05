@@ -2,6 +2,7 @@
 <html>
 <head>
   <title>My SMART App</title>
+  <script src="https://cdn.jsdelivr.net/npm/fhirclient/build/fhir-client.min.js"></script>
 </head>
 <body>
   <h1>Hello from Cerner SMART App</h1>
@@ -14,6 +15,12 @@
       });
 
       console.log('Page loaded. Waiting for click...');
+    });
+  </script>
+
+  <script>
+    FHIR.oauth2.ready().then(client => {
+    console.log("FHIR Client Ready!");
     });
   </script>
 </body>
