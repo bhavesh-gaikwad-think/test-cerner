@@ -14,7 +14,7 @@
         console.log('Button clicked!');
           FHIR.oauth2.authorize({
           clientId: '74eafbb0-536d-4add-8b17-2a0e07c04c44',
-          scope: 'launch openid profile patient/Patient.read patient/Observation.read online_access',
+          scope: 'launch openid profile patient/Patient.read user/Patient.read online_access',
           redirectUri: 'https://bhavesh-gaikwad-think.github.io/test-cerner/redirect'
         });
       });
