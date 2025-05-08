@@ -26,3 +26,25 @@
 </body>
 </html>
 
+<!-- index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My SMART App</title>
+</head>
+<body>
+  <h1>Hello from Cerner SMART App</h1>
+  <button id="myButton">Click Me</button>
+
+  <script>
+    // Click Event Listener
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('myButton').addEventListener('click', () => {
+        console.log('Button clicked!');
+      });
+
+      console.log('Page loaded. Waiting for click...');
+    });
+  </script>
+</body>
+</html>
