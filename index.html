@@ -7,20 +7,19 @@
 <body>
   <h1>Hello from Cerner SMART App</h1>
   <button id="myButton">Click Me</button>
-
+  <script src="https://cdn.jsdelivr.net/npm/fhirclient/build/fhir-client.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('myButton').addEventListener('click', () => {
         console.log('Button clicked!');
+          FHIR.oauth2.authorize({
+          clientId: '74eafbb0-536d-4add-8b17-2a0e07c04c44',
+          scope: 'launch openid profile patient/Patient.read patient/Observation.read online_access',
+          redirectUri: 'https://bhavesh-gaikwad-think.github.io/test-cerner/callback'
+        });
       });
 
       console.log('Page loaded. Waiting for click...');
-    });
-  </script>
-
-  <script>
-    FHIR.oauth2.ready().then(client => {
-    console.log("FHIR Client Ready!");
     });
   </script>
 </body>
