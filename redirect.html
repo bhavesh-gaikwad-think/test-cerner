@@ -1,4 +1,3 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -6,5 +5,62 @@
 </head>
 <body>
   <h1>Redirected URI</h1>
+  <button id="getTokenBtn">Get token and get patients</button>
+
+  <script>
+    document.getElementById("getTokenBtn").addEventListener("click", async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get("code");
+      const state = urlParams.get("state");
+
+      if (!code) {
+        console.error("Authorization code not found in URL.");
+        return;
+      }
+
+      // Your app's credentials
+      const client_id = "YOUR_CLIENT_ID_HERE"; // Replace with real value
+      const redirect_uri = "https://bhavesh-gaikwad-think.github.io/test-cerner/redirect";
+      const token_url = "https://authorization.sandboxcerner.com/tenants/dacc6494-e336-45ad-8729-b789ff8663c6/oauth2/token";
+      const fhir_base_url = "https://fhir-ehr.sandboxcerner.com/dstu2/dacc6494-e336-45ad-8729-b789ff8663c6";
+
+      try {
+        // Step 1: Exchange code for access token
+        const tokenResponse = await fetch(token_url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          body: new URLSearchParams({
+            grant_type: "authorization_code",
+            code,
+            redirect_uri,
+            client_id
+          })
+        });
+
+        const tokenData = await tokenResponse.json();
+        console.log("Token Response:", tokenData);
+
+        if (tokenData.access_token) {
+          // Step 2: Use token to call Patient API
+          const patientResponse = await fetch(`${fhir_base_url}/Patient`, {
+            method: "GET",
+            headers: {
+              "Authorization": `Bearer ${tokenData.access_token}`,
+              "Accept": "application/json"
+            }
+          });
+
+          const patientData = await patientResponse.json();
+          console.log("Patient Data:", patientData);
+        } else {
+          console.error("Access token not received", tokenData);
+        }
+      } catch (err) {
+        console.error("Error during token or patient fetch", err);
+      }
+    });
+  </script>
 </body>
 </html>
