@@ -16,12 +16,20 @@
           clientId: '9000c3a3-1b3c-4814-a54d-2cc4d804cc9c',
           scope: 'offline_access launch openid profile patient/Patient.read user/Patient.read online_access',
           redirectUri: 'https://bhavesh-gaikwad-think.github.io/test-cerner/redirect',
-          usePKCE: true
+          usePKCE: true,
+          iss: getUrlParam("iss"),
+          launch: getUrlParam("launch")
         });
       });
 
       console.log('Page loaded. Waiting for click...');
     });
+
+           function getUrlParam(name) {
+          const url = new URL(window.location.href);
+          return url.searchParams.get(name);
+        }
+    
   </script>
 </body>
 </html>
