@@ -15,7 +15,7 @@
       console.log("FHIR client ready", client);
 
       // Test request
-      client.request("Patient?name=joe").then(patients => {
+      client.request("Patient/12724067").then(patients => {
         console.log("Patient data", patients);
       });
     }).catch(err => {
