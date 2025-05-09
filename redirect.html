@@ -15,8 +15,8 @@
       console.log("FHIR client ready", client);
 
       // Test request
-      client.request("Patient/${client.patient.id}").then(patients => {
-        console.log("Patient data", patients);
+      client.request(`Patient/${client.patient.id}`).then(patient => {
+        console.log("Patient data", patient);
       });
     }).catch(err => {
       console.error("OAuth2 failure", err);
