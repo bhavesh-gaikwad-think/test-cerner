@@ -10,8 +10,8 @@
   <script>
     document.getElementById("getTokenBtn").addEventListener("click", async () => {
       const urlParams = new URLSearchParams(window.location.search);
-      const code = urlParams.get("code");
-      const state = urlParams.get("state");
+      const code = urlParams.get("iss");
+      const state = urlParams.get("launch");
 
       if (!code) {
         console.error("Authorization code not found in URL.");
