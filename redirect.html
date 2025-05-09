@@ -13,8 +13,9 @@
     document.getElementById("getTokenBtn").addEventListener("click", async () => {
     FHIR.oauth2.ready().then(client => {
       console.log("FHIR client ready", client);
-      let readPatient = client.patient.read();
-      console.log("Read Patient" , readPatient);
+      client.patient.read().then((patient) => {
+        console.log("Read Patient data", patient);
+      });
       // Test request
       client.request(`Patient/${client.patient.id}`).then(patient => {
         console.log("Patient data", patient);
