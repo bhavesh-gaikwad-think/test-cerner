@@ -9,64 +9,16 @@
 
   <script>
     document.getElementById("getTokenBtn").addEventListener("click", async () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const code = urlParams.get("code");
-      const state = urlParams.get("state");
-      const iss = urlParams.get("iss");
-      const launch = urlParams.get("launch");
+    FHIR.oauth2.ready().then(client => {
+      console.log("FHIR client ready", client);
 
-      if (!code) {
-        console.error("Authorization code not found in URL.");
-        // return;
-      }
-
-      // Your app's credentials
-      const client_id = "9000c3a3-1b3c-4814-a54d-2cc4d804cc9c"; 
-      const redirect_uri = "https://bhavesh-gaikwad-think.github.io/test-cerner/redirect";
-      const token_url = "https://authorization.sandboxcerner.com/tenants/dacc6494-e336-45ad-8729-b789ff8663c6/protocols/oauth2/profiles/smart-v1/token";
-      const fhir_base_url = "https://fhir-ehr.sandboxcerner.com/r4/dacc6494-e336-45ad-8729-b789ff8663c6";
-      const scope = "offline_access launch openid profile patient/Patient.read user/Patient.read online_access";
-
-      try {
-        // Step 1: Exchange code for access token
-        const tokenResponse = await fetch(token_url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          body: new URLSearchParams({
-            grant_type: "authorization_code",
-            code,
-            redirect_uri,
-            client_id,
-            scope,
-            iss,
-            launch,
-            usePKCE: true
-          })
-        });
-
-        const tokenData = await tokenResponse.json();
-        console.log("Token Response:", tokenData);
-
-        if (tokenData.access_token) {
-          // Step 2: Use token to call Patient API
-          const patientResponse = await fetch(`${fhir_base_url}/Patient`, {
-            method: "GET",
-            headers: {
-              "Authorization": `Bearer ${tokenData.access_token}`,
-              "Accept": "application/json"
-            }
-          });
-
-          const patientData = await patientResponse.json();
-          console.log("Patient Data:", patientData);
-        } else {
-          console.error("Access token not received", tokenData);
-        }
-      } catch (err) {
-        console.error("Error during token or patient fetch", err);
-      }
+      // Test request
+      client.request("Patient").then(patients => {
+        console.log("Patient data", patients);
+      });
+    }).catch(err => {
+      console.error("OAuth2 failure", err);
+    });
     });
   </script>
 </body>
