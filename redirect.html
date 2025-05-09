@@ -2,11 +2,13 @@
 <html>
 <head>
   <title>My SMART App</title>
+  <script src="https://cdn.jsdelivr.net/npm/fhirclient/build/fhir-client.js"></script>
 </head>
 <body>
   <h1>Redirected URI</h1>
   <button id="getTokenBtn">Get token and get patients</button>
-
+  
+  <script src="https://cdn.jsdelivr.net/npm/fhirclient/build/fhir-client.js"></script>
   <script>
     document.getElementById("getTokenBtn").addEventListener("click", async () => {
     FHIR.oauth2.ready().then(client => {
