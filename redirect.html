@@ -10,8 +10,10 @@
   <script>
     document.getElementById("getTokenBtn").addEventListener("click", async () => {
       const urlParams = new URLSearchParams(window.location.search);
-      const code = urlParams.get("iss");
-      const state = urlParams.get("launch");
+      const code = urlParams.get("code");
+      const state = urlParams.get("state");
+      const iss = urlParams.get("iss");
+      const launch = urlParams.get("launch");
 
       if (!code) {
         console.error("Authorization code not found in URL.");
@@ -37,7 +39,10 @@
             code,
             redirect_uri,
             client_id,
-            scope
+            scope,
+            iss,
+            launch,
+            usePKCE: true
           })
         });
 
