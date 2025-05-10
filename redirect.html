@@ -6,17 +6,23 @@
 </head>
 <body>
   <h1>Redirected URI</h1>
-  <button id="getTokenBtn">Get token and get patients</button>
+  <button id="getTokenBtn">Test FHIR API Connectivity</button>
   <div id="debug"></div>
-  <div id="data"></div>
+  <div id="metadata"></div>
+  <div id="observation"></div>
+  <div id="encounter"></div>
+  <div id="condition"></div>
   <div id="error"></div>
   
   <script>
     document.getElementById("getTokenBtn").addEventListener("click", async () => {
+      document.getElementById("metadata").innerHTML = '';
+      document.getElementById("observation").innerHTML = '';
+      document.getElementById("encounter").innerHTML = '';
+      document.getElementById("condition").innerHTML = '';
+      document.getElementById("error").innerHTML = '';
       try {
         const client = await FHIR.oauth2.ready();
-        console.log("FHIR client ready", client);
-        
         // Debug information
         const debugInfo = {
           patientId: client.patient.id,
@@ -33,18 +39,49 @@
           throw new Error("No patient ID in token response");
         }
 
-        console.log("Using patient ID from token:", patientId);
+        // 1. Metadata (CapabilityStatement)
+        try {
+          const metadata = await client.request({
+            url: 'metadata',
+            headers: { 'Accept': 'application/fhir+json' }
+          });
+          document.getElementById("metadata").innerHTML = `<pre>Metadata: ${JSON.stringify(metadata, null, 2)}</pre>`;
+        } catch (err) {
+          document.getElementById("metadata").innerHTML = `<pre style='color:red'>Metadata Error: ${err.message}</pre>`;
+        }
 
-        // Use the FHIR client's built-in request method with the patient ID from token
-        const patientData = await client.request({
-          url: `Patient/${patientId}`,
-          headers: {
-            'Accept': 'application/fhir+json'
-          }
-        });
+        // 2. Observation
+        try {
+          const observationData = await client.request({
+            url: `Observation?patient=${patientId}`,
+            headers: { 'Accept': 'application/fhir+json' }
+          });
+          document.getElementById("observation").innerHTML = `<pre>Observation: ${JSON.stringify(observationData, null, 2)}</pre>`;
+        } catch (err) {
+          document.getElementById("observation").innerHTML = `<pre style='color:red'>Observation Error: ${err.message}</pre>`;
+        }
 
-        console.log("Patient data:", patientData);
-        document.getElementById("data").innerHTML = `<pre>Patient Data: ${JSON.stringify(patientData, null, 2)}</pre>`;
+        // 3. Encounter
+        try {
+          const encounterData = await client.request({
+            url: `Encounter?patient=${patientId}`,
+            headers: { 'Accept': 'application/fhir+json' }
+          });
+          document.getElementById("encounter").innerHTML = `<pre>Encounter: ${JSON.stringify(encounterData, null, 2)}</pre>`;
+        } catch (err) {
+          document.getElementById("encounter").innerHTML = `<pre style='color:red'>Encounter Error: ${err.message}</pre>`;
+        }
+
+        // 4. Condition
+        try {
+          const conditionData = await client.request({
+            url: `Condition?patient=${patientId}`,
+            headers: { 'Accept': 'application/fhir+json' }
+          });
+          document.getElementById("condition").innerHTML = `<pre>Condition: ${JSON.stringify(conditionData, null, 2)}</pre>`;
+        } catch (err) {
+          document.getElementById("condition").innerHTML = `<pre style='color:red'>Condition Error: ${err.message}</pre>`;
+        }
       } catch (err) {
         console.error("OAuth2 failure", err);
         document.getElementById("error").innerHTML = `<pre style="color: red">Error: ${JSON.stringify(err, null, 2)}</pre>`;
