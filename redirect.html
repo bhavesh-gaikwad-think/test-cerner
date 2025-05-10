@@ -23,27 +23,21 @@
           serverUrl: client.state.serverUrl,
           tokenResponse: client.state.tokenResponse,
           patientContext: client.patient,
-          state: client.state,
-          launchContext: client.state.tokenResponse.launch
+          state: client.state
         };
         document.getElementById("debug").innerHTML = `<pre>Debug Info: ${JSON.stringify(debugInfo, null, 2)}</pre>`;
 
-        // Verify launch context
-        if (!client.state.tokenResponse.launch) {
-          throw new Error("No launch context available");
+        // Get patient ID from token response
+        const patientId = client.state.tokenResponse.patient;
+        if (!patientId) {
+          throw new Error("No patient ID in token response");
         }
 
-        // Verify patient context
-        if (!client.patient || !client.patient.id) {
-          throw new Error("No patient context available");
-        }
+        console.log("Using patient ID from token:", patientId);
 
-        // Log the patient ID we're about to use
-        console.log("Using patient ID:", client.patient.id);
-
-        // Use the FHIR client's built-in request method
+        // Use the FHIR client's built-in request method with the patient ID from token
         const patientData = await client.request({
-          url: `Patient/${client.patient.id}`,
+          url: `Patient/${patientId}`,
           headers: {
             'Accept': 'application/fhir+json'
           }
