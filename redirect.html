@@ -21,7 +21,9 @@
         const debugInfo = {
           patientId: client.patient.id,
           serverUrl: client.state.serverUrl,
-          tokenResponse: client.state.tokenResponse
+          tokenResponse: client.state.tokenResponse,
+          patientContext: client.patient,
+          state: client.state
         };
         document.getElementById("debug").innerHTML = `<pre>Debug Info: ${JSON.stringify(debugInfo, null, 2)}</pre>`;
 
@@ -29,13 +31,22 @@
         const token = client.state.tokenResponse.access_token;
         console.log("Access Token:", token);
 
-        // Make the request with the token
-        const response = await fetch(`${client.state.serverUrl}/Patient/${client.patient.id}`, {
+        // First try to get the patient context
+        if (!client.patient || !client.patient.id) {
+          throw new Error("No patient context available");
+        }
+
+        // Log the full URL we're about to call
+        const fullUrl = `${client.state.serverUrl}/Patient/${client.patient.id}`;
+        console.log("Calling URL:", fullUrl);
+
+        // Make the request with the token using the exact headers from Cerner documentation
+        const response = await fetch(fullUrl, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
+            'Accept': 'application/fhir+json',
+            'Content-Type': 'application/fhir+json'
           }
         });
 
@@ -43,7 +54,14 @@
         console.log("Raw response:", responseText);
 
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}, body: ${responseText}`);
+          const errorDetails = {
+            status: response.status,
+            statusText: response.statusText,
+            headers: Object.fromEntries(response.headers.entries()),
+            body: responseText
+          };
+          console.error("Error details:", errorDetails);
+          throw new Error(`HTTP error! Details: ${JSON.stringify(errorDetails, null, 2)}`);
         }
 
         const patientData = JSON.parse(responseText);
