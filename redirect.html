@@ -7,22 +7,48 @@
 <body>
   <h1>Redirected URI</h1>
   <button id="getTokenBtn">Get token and get patients</button>
-  
+  <div id="debug"></div>
   <script src="https://cdn.jsdelivr.net/npm/fhirclient/build/fhir-client.js"></script>
   <script>
     document.getElementById("getTokenBtn").addEventListener("click", async () => {
-    FHIR.oauth2.ready().then(client => {
-      console.log("FHIR client ready", client);
-      client.patient.read().then((patient) => {
-        console.log("Read Patient data", patient);
-      });
-      // Test request
-      client.request(`Patient/${client.patient.id}`).then(patient => {
-        console.log("Patient data", patient);
-      });
-    }).catch(err => {
-      console.error("OAuth2 failure", err);
-    });
+      try {
+        const client = await FHIR.oauth2.ready();
+        console.log("FHIR client ready", client);
+        
+        // Debug information
+        const debugInfo = {
+          patientId: client.patient.id,
+          serverUrl: client.state.serverUrl,
+          tokenResponse: client.state.tokenResponse
+        };
+        document.getElementById("debug").innerHTML = `<pre>Debug Info: ${JSON.stringify(debugInfo, null, 2)}</pre>`;
+
+        // First try the simpler patient.read() method
+        try {
+          const patient = await client.patient.read();
+          console.log("Patient data from read():", patient);
+          document.getElementById("debug").innerHTML += `<pre>Patient Data: ${JSON.stringify(patient, null, 2)}</pre>`;
+        } catch (readError) {
+          console.error("Error in patient.read():", readError);
+          
+          // If that fails, try the explicit request with token
+          const token = await client.getAccessToken();
+          console.log("Access Token:", token);
+          
+          const response = await client.request(`Patient/${client.patient.id}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Accept': 'application/json'
+            }
+          });
+          
+          console.log("Patient data from request():", response);
+          document.getElementById("debug").innerHTML += `<pre>Patient Data (request): ${JSON.stringify(response, null, 2)}</pre>`;
+        }
+      } catch (err) {
+        console.error("OAuth2 failure", err);
+        document.getElementById("debug").innerHTML = `<pre style="color: red">Error: ${JSON.stringify(err, null, 2)}</pre>`;
+      }
     });
   </script>
 </body>
