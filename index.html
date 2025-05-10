@@ -14,7 +14,7 @@
         console.log('Button clicked!');
           FHIR.oauth2.authorize({
           clientId: '9000c3a3-1b3c-4814-a54d-2cc4d804cc9c',
-          scope: 'launch/patient offline_access launch openid profile patient/Patient.read user/Patient.read online_access',
+          scope: 'launch online_access openid patient/Patient.read profile user/Patient.read',
           redirectUri: 'https://bhavesh-gaikwad-think.github.io/test-cerner/redirect',
           usePKCE: true,
           iss: getUrlParam("iss"),
