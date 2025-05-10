@@ -23,48 +23,32 @@
           serverUrl: client.state.serverUrl,
           tokenResponse: client.state.tokenResponse,
           patientContext: client.patient,
-          state: client.state
+          state: client.state,
+          launchContext: client.state.tokenResponse.launch
         };
         document.getElementById("debug").innerHTML = `<pre>Debug Info: ${JSON.stringify(debugInfo, null, 2)}</pre>`;
 
-        // Get the token from the state
-        const token = client.state.tokenResponse.access_token;
-        console.log("Access Token:", token);
+        // Verify launch context
+        if (!client.state.tokenResponse.launch) {
+          throw new Error("No launch context available");
+        }
 
-        // First try to get the patient context
+        // Verify patient context
         if (!client.patient || !client.patient.id) {
           throw new Error("No patient context available");
         }
 
-        // Log the full URL we're about to call
-        const fullUrl = `${client.state.serverUrl}/Patient/${client.patient.id}`;
-        console.log("Calling URL:", fullUrl);
+        // Log the patient ID we're about to use
+        console.log("Using patient ID:", client.patient.id);
 
-        // Make the request with the token using the exact headers from Cerner documentation
-        const response = await fetch(fullUrl, {
-          method: 'GET',
+        // Use the FHIR client's built-in request method
+        const patientData = await client.request({
+          url: `Patient/${client.patient.id}`,
           headers: {
-            'Authorization': `Bearer ${token}`,
-            'Accept': 'application/fhir+json',
-            'Content-Type': 'application/fhir+json'
+            'Accept': 'application/fhir+json'
           }
         });
 
-        const responseText = await response.text();
-        console.log("Raw response:", responseText);
-
-        if (!response.ok) {
-          const errorDetails = {
-            status: response.status,
-            statusText: response.statusText,
-            headers: Object.fromEntries(response.headers.entries()),
-            body: responseText
-          };
-          console.error("Error details:", errorDetails);
-          throw new Error(`HTTP error! Details: ${JSON.stringify(errorDetails, null, 2)}`);
-        }
-
-        const patientData = JSON.parse(responseText);
         console.log("Patient data:", patientData);
         document.getElementById("data").innerHTML = `<pre>Patient Data: ${JSON.stringify(patientData, null, 2)}</pre>`;
       } catch (err) {
