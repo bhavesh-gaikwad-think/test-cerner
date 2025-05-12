@@ -5,9 +5,10 @@
   <script src="https://cdn.jsdelivr.net/npm/fhirclient/build/fhir-client.js"></script>
 </head>
 <body>
-  <h1>Redirected URI</h1>
-  <button id="getTokenBtn">Test FHIR API Connectivity</button>
+  <h1>Successfully logged in with Cerner</h1>
+  <button id="getTokenBtn">Test FHIR API Connectivity :</button>
   <div id="debug"></div>
+  <div id="patient"></div>
   <div id="metadata"></div>
   <div id="observation"></div>
   <div id="encounter"></div>
@@ -17,6 +18,7 @@
   <script>
     document.getElementById("getTokenBtn").addEventListener("click", async () => {
       document.getElementById("metadata").innerHTML = '';
+      document.getElementById("patient").innerHTML = '';
       document.getElementById("observation").innerHTML = '';
       document.getElementById("encounter").innerHTML = '';
       document.getElementById("condition").innerHTML = '';
@@ -39,7 +41,18 @@
           throw new Error("No patient ID in token response");
         }
 
-        // 1. Metadata (CapabilityStatement)
+        // 1. Patient Data
+        try {
+          const patientData = await client.request({
+            url: `Patient/${patientId}`,
+            headers: { 'Accept': 'application/fhir+json' }
+          });
+          document.getElementById("patient").innerHTML = `<pre>Patient Data: ${JSON.stringify(patientData, null, 2)}</pre>`;
+        } catch (err) {
+          document.getElementById("patient").innerHTML = `<pre style='color:red'>Patient Error: ${err.message}</pre>`;
+        }
+
+        // 2. Metadata (CapabilityStatement)
         try {
           const metadata = await client.request({
             url: 'metadata',
@@ -50,7 +63,7 @@
           document.getElementById("metadata").innerHTML = `<pre style='color:red'>Metadata Error: ${err.message}</pre>`;
         }
 
-        // 2. Observation
+        // 3. Observation
         try {
           const observationData = await client.request({
             url: `Observation?patient=${patientId}`,
@@ -61,7 +74,7 @@
           document.getElementById("observation").innerHTML = `<pre style='color:red'>Observation Error: ${err.message}</pre>`;
         }
 
-        // 3. Encounter
+        // 4. Encounter
         try {
           const encounterData = await client.request({
             url: `Encounter?patient=${patientId}`,
@@ -72,7 +85,7 @@
           document.getElementById("encounter").innerHTML = `<pre style='color:red'>Encounter Error: ${err.message}</pre>`;
         }
 
-        // 4. Condition
+        // 5. Condition
         try {
           const conditionData = await client.request({
             url: `Condition?patient=${patientId}`,
