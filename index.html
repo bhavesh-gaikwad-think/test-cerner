@@ -15,7 +15,8 @@
         console.log('Button clicked!');
           FHIR.oauth2.authorize({
           clientId: '9000c3a3-1b3c-4814-a54d-2cc4d804cc9c',
-          scope: 'launch launch/patient offline_access fhirUser openId user/Patient.read patient/. patient/.read user/.* profile patient/Observation.read patient/Encounter.read',
+          scope: 'launch launch/patient offline_access fhirUser openId user/Patient.read patient.read patient/Observation.read patient/Encounter.read profile',
+          // scope: 'launch launch/patient offline_access fhirUser openId user/Patient.read patient/. patient/.read user/.* profile patient/Observation.read patient/Encounter.read',
           redirectUri: 'https://bhavesh-gaikwad-think.github.io/test-cerner/redirect',
           usePKCE: true,
           iss: getUrlParam("iss"),
