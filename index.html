@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>My SMART App</title>
   <script src="https://cdn.jsdelivr.net/npm/fhirclient/build/fhir-client.min.js"></script>
 </head>
+
 <body>
   <h1>Sample JavaScript App</h1>
   <button id="myButton">Login with Cerner</button>
@@ -13,9 +15,11 @@
     document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('myButton').addEventListener('click', () => {
         console.log('Button clicked!');
-          FHIR.oauth2.authorize({
+        FHIR.oauth2.authorize({
           clientId: '9000c3a3-1b3c-4814-a54d-2cc4d804cc9c',
-          scope: 'launch launch/patient offline_access fhirUser openId user/Patient.read patient/. patient/.read user/.* profile patient/Observation.read patient/Encounter.read',
+          // scope: 'launch launch/patient offline_access fhirUser openId user/Patient.read patient/. patient/.read user/.* profile patient/Observation.read patient/Encounter.read',
+          // scope: 'patient/Observation.read patient/MedicationHistory.read launch',
+          scope: 'openid fhirUser launch patient/Patient.read user/Patient.read patient/Observation.read user/Observation.read patient/Condition.read user/Condition.read',
           redirectUri: 'https://bhavesh-gaikwad-think.github.io/test-cerner/redirect',
           usePKCE: true,
           iss: getUrlParam("iss"),
@@ -32,4 +36,5 @@
     }
   </script>
 </body>
+
 </html>
