@@ -27,7 +27,7 @@
         const client = await FHIR.oauth2.ready();
         // Debug information
         const debugInfo = {
-          patientId: client.patient.id,
+          patientId: client.state.tokenResponse.patient,
           serverUrl: client.state.serverUrl,
           tokenResponse: client.state.tokenResponse,
           patientContext: client.patient,
