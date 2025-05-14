@@ -37,6 +37,7 @@
 
         // Get patient ID from token response
         const patientId = client.state.tokenResponse.patient;
+        console.log("patientId", patientId);
         if (!patientId) {
           throw new Error("No patient ID in token response");
         }
